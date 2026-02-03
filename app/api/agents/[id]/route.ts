@@ -1,7 +1,6 @@
-import { neon } from '@neondatabase/serverless';
+import { getDb } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 
-const sql = neon(process.env.DATABASE_URL!);
 const ADMIN_KEY = process.env.ADMIN_API_KEY;
 
 // Helper to check admin auth
@@ -18,6 +17,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const sql = getDb();
     const agents = await sql`
       SELECT * FROM agents WHERE id = ${params.id}
     `;
@@ -56,8 +56,9 @@ export async function PATCH(
   }
 
   try {
+    const sql = getDb();
     const body = await request.json();
-    const { status, ...updates } = body;
+    const { status } = body;
 
     // If approving, set approved_at timestamp
     if (status === 'approved') {
@@ -126,6 +127,7 @@ export async function DELETE(
   }
 
   try {
+    const sql = getDb();
     const result = await sql`
       DELETE FROM agents WHERE id = ${params.id}
       RETURNING id, name, handle

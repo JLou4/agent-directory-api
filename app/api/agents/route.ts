@@ -1,11 +1,10 @@
-import { neon } from '@neondatabase/serverless';
+import { getDb } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
-
-const sql = neon(process.env.DATABASE_URL!);
 
 // GET /api/agents - List approved agents (public)
 export async function GET(request: NextRequest) {
   try {
+    const sql = getDb();
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status') || 'approved';
     const includeAll = searchParams.get('all') === 'true';
@@ -45,6 +44,7 @@ export async function GET(request: NextRequest) {
 // POST /api/agents - Submit a new agent (public)
 export async function POST(request: NextRequest) {
   try {
+    const sql = getDb();
     const body = await request.json();
     
     const {

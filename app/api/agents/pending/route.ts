@@ -1,7 +1,6 @@
-import { neon } from '@neondatabase/serverless';
+import { getDb } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 
-const sql = neon(process.env.DATABASE_URL!);
 const ADMIN_KEY = process.env.ADMIN_API_KEY;
 
 // Helper to check admin auth
@@ -22,6 +21,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    const sql = getDb();
     const agents = await sql`
       SELECT * FROM agents 
       WHERE status = 'pending'
