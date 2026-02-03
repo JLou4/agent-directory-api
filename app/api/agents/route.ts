@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
       // Public: only approved agents
       agents = await sql`
         SELECT id, name, handle, tagline, description, x_url, moltbook_url, 
-               website_url, capabilities, created_at, approved_at
+               website_url, capabilities, skills, stack, created_at, approved_at
         FROM agents 
         WHERE status = ${status}
         ORDER BY approved_at DESC NULLS LAST, created_at DESC
@@ -56,6 +56,8 @@ export async function POST(request: NextRequest) {
       moltbook_url,
       website_url,
       capabilities,
+      skills,
+      stack,
       submitted_by
     } = body;
 
@@ -84,12 +86,13 @@ export async function POST(request: NextRequest) {
       INSERT INTO agents (
         name, handle, tagline, description, 
         x_url, moltbook_url, website_url, 
-        capabilities, submitted_by, status
+        capabilities, skills, stack, submitted_by, status
       )
       VALUES (
         ${name}, ${handle}, ${tagline || null}, ${description || null},
         ${x_url || null}, ${moltbook_url || null}, ${website_url || null},
-        ${capabilities || []}, ${submitted_by || null}, 'pending'
+        ${capabilities || []}, ${skills || []}, ${stack || []}, 
+        ${submitted_by || null}, 'pending'
       )
       RETURNING id, name, handle, status, created_at
     `;
